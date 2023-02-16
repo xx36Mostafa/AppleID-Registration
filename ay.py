@@ -234,8 +234,10 @@ def intro():
 ██      ██ ██       ██   ██ ██    ██ ██   ██ ██   ██ 
 ██  █████  ███████  ██████  ██    ██ ██   ██ ███████ 
         ██ ██    ██ ██   ██ ██    ██ ██   ██ ██   ██ 
-██ ██████   ██████  ██████   ██████  ██████  ██   ██ ''')
+██ ██████   ██████  ██████   ██████  ██████  ██   ██ 
+''')
     print(Fore.RED + 'MUSTAFA NASSER - Whattsapp [+201098974486]'+Style.RESET_ALL)
+    print(Fore.RED + 'Are u Here Abu Sham?'+Style.RESET_ALL)
     print(Fore.LIGHTYELLOW_EX)
 
 def get_number(path_):
