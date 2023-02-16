@@ -15,12 +15,12 @@ init(strip=not sys.stdout.isatty())
 os.system('cls')
 
 class bot():
-    def __init__(self,number,mode,mode_proxy,proxies,mode_call):
+    def __init__(self,number,mode,mode_proxy,proxies,mode_call,captcha_code):
         self.number = number
         self.mode = mode
         self.proxy,self.mode_proxy = proxies,mode_proxy
         self.mode_call = mode_call
-        self.captcha = open('captcha.txt','r').read()
+        self.captcha = captcha_code
         self.random_numbers = random.sample(range(1000), 1)
         ########################
         if self.mode == "1":
@@ -109,6 +109,7 @@ class bot():
             if self.solvecaptcha(self.browser):
                 if 'Please enter the characters you see or hear to continue.' in self.browser.inner_text('*', timeout=1000):
                     if self.solvecaptcha(self.browser):
+                        s = time.time()
                         while True:
                             emails = TempMail.getEmails(self.inbox)
                             maildata = str(emails)
@@ -126,11 +127,21 @@ class bot():
                                     self.context.close()
                                     self.browser.close()
                                     break
+                                
                             except:
                                 if 'Your account cannot be created at this time.' in self.browser.inner_text('*', timeout=2000):
                                     self.context.close()
                                     self.browser.close()
+                                    print(Fore.LIGHTRED_EX+f'{self.number} >>> Failed')
+                                    with open('failed.txt','a+') as f:
+                                        f.write(f'{self.number}\n')
                                     break
+                                elif int(time.time() - s) == 15:
+                                    print(Fore.LIGHTRED_EX+f'{self.number} >>> Failed')
+                                    with open('failed.txt','a+') as f:
+                                        f.write(f'{self.number}\n')
+                                    break
+
                 elif 'Enter a valid phone number.' in self.browser.inner_text('*', timeout=1000):
                     print(Fore.LIGHTRED_EX+f'{self.number} >>> Failed')
                 else:
@@ -275,7 +286,7 @@ if __name__ == '__main__':
             for i in range(browser_num):
                 num = get_number(numbers)
                 proxy = get_proxy(proxy)
-                s = bot(num,headles,mode_proxy,proxy,call_num,proxy)
+                s = bot(num,headles,mode_proxy,proxy,call_num,proxy,captcha_)
                 t = threading.Thread(target=s.start,args=())
                 t.start()
                 threads.append(t)
