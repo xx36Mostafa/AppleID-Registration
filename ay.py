@@ -227,24 +227,24 @@ def intro():
     print(Fore.RED + 'MUSTAFA NASSER - Whattsapp [+201098974486]'+Style.RESET_ALL)
     print(Fore.LIGHTYELLOW_EX)
 
-def get_number():
-    with open('numbers.txt','r') as ff:
+def get_number(path_):
+    with open(f'{path_}','r') as ff:
         one = ff.read().splitlines()
     number = one[0]
     numbers = one[1:]
-    with open('numbers.txt','w') as num:
+    with open(f'{path_}','w') as num:
         for i in numbers:
             num.write(i+'\n')
         num.write(number+'\n')
     return number
 
-def get_proxy():
+def get_proxy(path):
     # Proxy
-    with open('proxy.txt','r') as pr:
+    with open(f'{path}','r') as pr:
         proxiesss = pr.read().splitlines()
     proxy = proxiesss[0]
     proxies = proxiesss[1:]
-    with open('proxy.txt','w') as pro:
+    with open(f'{path}','w') as pro:
         for proxyy in proxies:
             pro.write(proxyy+'\n')
         pro.write(proxy+'\n')
@@ -273,8 +273,8 @@ if __name__ == '__main__':
         for i in range(count_):
             threads = []
             for i in range(browser_num):
-                num = get_number()
-                proxy = get_proxy()
+                num = get_number(numbers)
+                proxy = get_proxy(proxy)
                 s = bot(num,headles,mode_proxy,proxy,call_num,proxy)
                 t = threading.Thread(target=s.start,args=())
                 t.start()
