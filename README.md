@@ -1,6 +1,7 @@
 # Apple ID Registration Bot
 
-This Python script automates the registration process for Apple IDs using Playwright for browser automation and TwoCaptcha for solving captchas.
+This Python script automates the registration process for Apple IDs using Playwright for browser automation and CapMonster for solving captchas.
+Capmonster is used because it is the best, fast in solution, and cheap, and I recommend it to all sites
 
 ## Description
 
