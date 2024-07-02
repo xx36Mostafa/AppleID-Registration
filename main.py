@@ -4,7 +4,6 @@ import re
 from playwright.sync_api import sync_playwright
 import sys
 import time , names
-from twocaptcha import TwoCaptcha
 import threading
 import base64
 import phone_iso3166.country as countries
@@ -197,34 +196,63 @@ class bot():
             except:
                 print(Fore.LIGHTRED_EX+f'{self.number} >>> Failed')
 
-    def solvecaptcha(self,browser):
-        self.browser = browser
+    def solvecaptcha(self, browser):
         try:
             time.sleep(1)
-            solver = TwoCaptcha(f'{self.captcha}', defaultTimeout=600, pollingInterval=10)
+            # Replace with your CapMonster credentials and URL
+            capmonster_url = 'https://api.capmonster.cloud/in.php'
+            capmonster_key = 'your_capmonster_api_key'
+            
             image = self.browser.get_attribute('//img[@alt="Image challenge"]','src')
             path = f"module/captcha{self.random_numbers}"
+            
             if image:
                 imgdata = base64.b64decode(image.split(',')[1])
                 with open(f'{path}.jpeg', 'wb') as file:
                     file.write(imgdata)
             else:
                 print("Error: Could not find the captcha image")
-            result = solver.normal(f'{path}.jpeg')
-            code = result['code']
-            self.browser.wait_for_selector('//input[@class="generic-input-field   form-textbox form-textbox-text       "]', timeout=10000)
+                return False
+            
+            # Send captcha image to CapMonster for solving
+            with open(f'{path}.jpeg', 'rb') as file:
+                files = {'file': file}
+                params = {
+                    'key': capmonster_key,
+                    'method': 'base64'
+                }
+                response = requests.post(capmonster_url, files=files, data=params)
+                captcha_id = response.text.split('|')[1]
+                
+                # Polling CapMonster for the result
+                while True:
+                    time.sleep(10)
+                    result_url = f'https://api.capmonster.cloud/res.php?key={capmonster_key}&action=get&id={captcha_id}'
+                    response = requests.get(result_url)
+                    if 'OK' in response.text:
+                        code = response.text.split('|')[1]
+                        break
+                    elif 'ERROR' in response.text:
+                        print(f"[+] Error from CapMonster: {response.text}")
+                        return False
+            
             # Fill Captcha Solve
-            self.browser.fill('//input[@class="generic-input-field   form-textbox form-textbox-text       "]',code)
+            self.browser.wait_for_selector('//input[@class="generic-input-field form-textbox form-textbox-text"]', timeout=10000)
+            self.browser.fill('//input[@class="generic-input-field form-textbox form-textbox-text"]', code.strip())
+            
             # Submit Form
-            self.browser.click('//button[@class="button button-primary last nav-action  pull-right weight-medium"]')
+            self.browser.click('//button[@class="button button-primary last nav-action pull-right weight-medium"]')
+            
             # Remove Photo's
             try:
                 os.remove(f'{path}.jpeg')
             except:
                 pass
+            
             return True
-        except:
-            print('[+] Error To Solve Captcha')
+        
+        except Exception as e:
+            print(f'[+] Error To Solve Captcha: {e}')
             return False
         
 
@@ -262,7 +290,6 @@ def get_proxy(path):
             pro.write(proxyy+'\n')
         pro.write(proxy+'\n')
     return proxy
-
 
 
 if __name__ == '__main__':
