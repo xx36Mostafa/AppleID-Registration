@@ -11,7 +11,7 @@ The bot is designed to register multiple Apple IDs simultaneously. It uses Playw
 
 - Python 3.x
 - Playwright
-- TwoCaptcha
+- CapMonster
 - TempMail
 - phonenumbers
 - names
